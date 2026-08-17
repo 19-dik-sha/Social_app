@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./Backend/My_app
+    container_name: social-backend
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    restart: always
+    volumes:
+      - ./Backend/My_app/media:/app/media
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: social-frontend
+    ports:
+      - "3000:80"
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: social-db
+    environment:
+      POSTGRES_USER: dusk_user
+      POSTGRES_PASSWORD: diksha@2005
+      POSTGRES_DB: dusk_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
