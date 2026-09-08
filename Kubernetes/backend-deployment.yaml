@@ -1,0 +1,54 @@
+apiVersion:  apps/v1
+kind:  Deployment
+metadata:
+  name:  backend-deployment
+  labels:
+    app:  backend
+spec:
+  replicas:  3
+
+  selector:
+    matchLabels:
+      app:  backend
+
+  template:
+    metadata:
+      labels:
+        app:  backend
+
+    spec:
+      containers:
+      - name:  backend
+        image:  social-backend:v2
+        imagePullPolicy:  IfNotPresent
+        ports:
+         - containerPort:  8001
+
+        env:
+         - name:  DEBUG
+           valueFrom: 
+             configMapKeyRef: 
+               name:  backend-config
+               key:  DEBUG 
+
+         - name:  ALLOWED_HOSTS
+           valueFrom: 
+             configMapKeyRef:
+               name:  backend-config
+               key:  ALLOWED_HOSTS
+
+         - name:  DB_PASSWORD
+           valueFrom:
+             secretKeyRef:
+                name:  backend-secrets
+                key:  DB_PASSWORD
+
+        volumeMounts:
+        - name: media-storage
+          mountPath: /app/media
+
+      volumes:
+      - name: media-storage
+        persistentVolumeClaim:
+          claimName: media-pvc 
+
